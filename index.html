@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Jangka Sorong SMK</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #e74c3c; --accent: #f1c40f; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 15px; color: #333; }
+        .header { background: var(--primary); color: white; padding: 15px; text-align: center; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .tab-menu { display: flex; overflow-x: auto; gap: 10px; margin-bottom: 20px; padding-bottom: 5px; }
+        .tab-btn { background: #ddd; border: none; padding: 10px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .tab-btn.active { background: var(--secondary); color: white; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: none; }
+        .card.active { display: block; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        .hasil { margin-top: 20px; padding: 15px; background: #e8f8f5; border-left: 5px solid #27ae60; text-align: center; }
+        .hasil span { display: block; font-size: 24px; font-weight: bold; color: #27ae60; }
+        small { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2 style="margin:0">🛠️ Jangka Sorong Lengkap</h2>
+    <p style="margin:5px 0 0; font-size:12px">Kalkulator Pengukuran Jangka Sorong
+    Dijamin Presisi</p>
+</div>
+
+<div class="tab-menu">
+    <button class="tab-btn active" onclick="openTab(event, 'm005')">0.05 mm</button>
+    <button class="tab-btn" onclick="openTab(event, 'm002')">0.02 mm</button>
+    <button class="tab-btn" onclick="openTab(event, 'i128')">1/128 in</button>
+    <button class="tab-btn" onclick="openTab(event, 'i1000')">1/1000 in</button>
+</div>
+
+<div id="m005" class="card active">
+    <h3>Jangka Sorong 0.05 mm</h3>
+    <label>Skala Utama (mm):</label>
+    <input type="number" id="u05" placeholder="Contoh: 21">
+    <label>Skala Nonius:</label>
+    <input type="number" id="n05" placeholder="Garis ke">
+    <button onclick="hitung(0.05, 'u05', 'n05', 'h05', 2)">HITUNG HASIL</button>
+    <div class="hasil" id="h05" style="display:none">Hasil: <span id="r05"></span></div>
+</div>
+
+<div id="m002" class="card">
+    <h3>Jangka Sorong 0.02 mm</h3>
+    <label>Skala Utama (mm):</label>
+    <input type="number" id="u02" placeholder="Contoh: 21">
+    <label>Skala Nonius</label>
+    <input type="number" id="n02" placeholder="Garis ke">
+    <button onclick="hitung(0.02, 'u02', 'n02', 'h02', 2)">HITUNG HASIL</button>
+    <div class="hasil" id="h02" style="display:none">hasil: <span id="r02"></span></div>
+</div>
+
+<div id="i128" class="card">
+    <h3>Jangka Sorong 1/128 inch</h3>
+    <label>Skala Utama (inch):</label>
+    <input type="number" id="ui128" placeholder="Contoh: 21">
+    <label>Skala Nonius:</label>
+    <input type="number" id="ni128" placeholder="Garis ke">
+    <button onclick="hitung128()">HITUNG HASIL</button>
+    <div class="hasil" id="hi128" style="display:none">
+        Hasil: <span id="ri128"></span>
+        <small id="ri128des"></small>
+    </div>
+</div>
+
+<div id="i1000" class="card">
+    <h3>Jangka Sorong 1/1000 inch</h3>
+    <label>Skala Utama (inch):</label>
+    <input type="number" id="ui1000" placeholder="Contoh: 21">
+    <label>Skala Nonius:</label>
+    <input type="number" id="ni1000" placeholder="Garis ke">
+    <button onclick="hitung(0.001, 'ui1000', 'ni1000', 'hi1000', 3)">HITUNG HASIL</button>
+    <div class="hasil" id="hi1000" style="display:none">Hasil: <span id="ri1000"></span></div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, card, tablinks;
+        card = document.getElementsByClassName("card");
+        for (i = 0; i < card.length; i++) { card[i].style.display = "none"; card[i].classList.remove("active"); }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) { tablinks[i].classList.remove("active"); }
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    function hitung(kali, idU, idN, idH, fix) {
+        var u = document.getElementById(idU).value;
+        var n = document.getElementById(idN).value;
+        if(u === "" || n === "") { alert("mohon masukan angkanya dulu!"); return; }
+        
+        var hasil = parseFloat(u) + (parseFloat(n) * kali);
+        var resBox = document.getElementById(idH);
+        resBox.style.display = "block";
+        resBox.querySelector('span').innerHTML = hasil.toFixed(fix) + (kali < 0.01 ? " in" : " mm");
+    }
+    
+    function hitung128() {
+    var uInput = document.getElementById('ui128').value;
+    var nInput = document.getElementById('ni128').value;
+    
+    // TAMBAHKAN SATPAM DI SINI
+    if(uInput === "" || nInput === "") { 
+        alert("Mohon masukan angkanya dulu!"); 
+        return; 
+    }
+    
+    var u = parseInt(uInput);
+    var n = parseInt(nInput);
+    
+    // Rumus: (Utama * 8 + Nonius) / 128
+    var pembilang = (u * 8) + n;
+    var desimal = pembilang / 128;
+    
+    var resBox = document.getElementById('hi128');
+    resBox.style.display = "block";
+    document.getElementById('ri128').innerHTML = pembilang + "/128 inch";
+    document.getElementById('ri128des').innerHTML = "Setara dengan: " + desimal.toFixed(4) + " inch";
+}
+
+
+</script>
+
+</body>
+</html>
